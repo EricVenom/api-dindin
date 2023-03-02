@@ -58,6 +58,13 @@ const signIn = async (req, res) => {
     }
 };
 
+const showUser = async (req, res) => {
+    const { id } = req.userId;
+
+    const { rows } = await pool.query('select * from usuarios where id = $1', [id]);
+    const { senha: _, ...user } = rows[0];
+    return res.json({ ...user })
+}
 
 
-module.exports = { signUp, signIn }
+module.exports = { signUp, signIn, showUser }
