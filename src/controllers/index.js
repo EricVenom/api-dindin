@@ -1,5 +1,7 @@
 const pool = require('../services/connection');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const jwtPassword = require('../jwtpass');
 
 const signUp = async (req, res) => {
     const { nome, email, senha } = req.body;
@@ -23,8 +25,39 @@ const signUp = async (req, res) => {
 
         return res.status(201).json(user);
     } catch (error) {
-        return res.status(500).json({ mensagem: "Erro interno do servidor." })
+        return res.status(500).json({ mensagem: error.message })
     }
 }
 
-module.exports = { signUp }
+const signIn = async (req, res) => {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+        return res.status(400).json({ mensagem: "Informe seus dados corretamente." });
+    }
+
+    try {
+        const user = await pool.query('select * from usuarios where email = $1', [email]);
+
+        if (!user.rowCount) {
+            return res.status(401).json({ mensagem: "Email ou senha inválida." });
+        };
+
+        const validPassword = await bcrypt.compare(senha, user.rows[0].senha);
+
+        if (!validPassword) {
+            return res.status(401).json({ mensagem: "Email ou senha inválida." });
+        };
+
+        const token = jwt.sign({ id: user.rows[0].id }, jwtPassword, { expiresIn: '8h' });
+        const { senha: _, ...loggedUser } = user.rows[0]
+
+        return res.json({ user: loggedUser, token });
+    } catch (error) {
+        return res.status(500).json({ mensagem: error.message })
+    }
+};
+
+
+
+module.exports = { signUp, signIn }
