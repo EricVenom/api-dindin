@@ -1,7 +1,7 @@
 const express = require('express');
 const routes = express();
-const { running } = require('./controllers');
+const { signUp } = require('./controllers');
 
-routes.post('/usuario', running);
+routes.post('/usuario', signUp);
 
 module.exports = routes;
