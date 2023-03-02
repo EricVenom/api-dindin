@@ -34,7 +34,7 @@ const signIn = async (req, res) => {
 
     if (!email || !senha) {
         return res.status(400).json({ mensagem: "Informe seus dados corretamente." });
-    }
+    };
 
     try {
         const user = await pool.query('select * from usuarios where email = $1', [email]);
@@ -54,7 +54,7 @@ const signIn = async (req, res) => {
 
         return res.json({ user: loggedUser, token });
     } catch (error) {
-        return res.status(500).json({ mensagem: error.message })
+        return res.status(500).json({ mensagem: error.message });
     }
 };
 
