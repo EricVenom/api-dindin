@@ -40,19 +40,19 @@ const signIn = async (req, res) => {
         const user = await pool.query('select * from usuarios where email = $1', [email]);
 
         if (!user.rowCount) {
-            return res.status(401).json({ mensagem: "Email ou senha inválida." });
+            return res.status(401).json({ mensagem: "Usuário e/ou senha inválido(s)." });
         };
 
         const validPassword = await bcrypt.compare(senha, user.rows[0].senha);
 
         if (!validPassword) {
-            return res.status(401).json({ mensagem: "Email ou senha inválida." });
+            return res.status(401).json({ mensagem: "Usuário e/ou senha inválido(s)." });
         };
 
         const token = jwt.sign({ id: user.rows[0].id }, jwtPassword, { expiresIn: '8h' });
         const { senha: _, ...loggedUser } = user.rows[0]
 
-        return res.json({ user: loggedUser, token });
+        return res.json({ usuario: loggedUser, token });
     } catch (error) {
         return res.status(500).json({ mensagem: error.message });
     }
