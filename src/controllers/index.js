@@ -23,11 +23,9 @@ const signUp = async (req, res) => {
 
         const encryptedPassword = await bcrypt.hash(senha, 10);
 
-        await pool.query('insert into usuarios (nome, email, senha) values ($1, $2, $3)', [nome, email, encryptedPassword]);
-        const { rows } = await pool.query('select * from usuarios where email = $1', [email])
-        const { senha: _, ...user } = rows[0]
+        const { rows } = await pool.query('insert into usuarios (nome, email, senha) values ($1, $2, $3) returning id, nome, email', [nome, email, encryptedPassword]);
 
-        return res.status(201).json(user);
+        return res.status(201).json(rows[0]);
     } catch (error) {
         return res.status(500).json({ mensagem: error.message })
     }
