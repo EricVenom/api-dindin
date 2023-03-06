@@ -130,7 +130,23 @@ const showTransactions = async (req, res) => {
 };
 
 const showTransactionsById = async (req, res) => {
-    return res.send('this is running')
+    const { id } = req.userId;
+    const { id: transactionId } = req.params;
+    try {
+        const query = 'SELECT transacoes.id, transacoes.tipo, transacoes.descricao, transacoes.valor, transacoes.data,\
+        transacoes.usuario_id, transacoes.categoria_id, categorias.descricao AS categoria_nome\
+        FROM transacoes\
+        JOIN categorias ON transacoes.categoria_id = categorias.id  WHERE usuario_id = $1 AND transacoes.id = $2';
+
+        const { rows: userTransactions, rowCount } = await pool.query(query, [id, transactionId]);
+        if (!rowCount) {
+            return res.status(404).json({ mensagem: 'Transação não encontrada.' })
+        }
+
+        return res.json(userTransactions)
+    } catch (error) {
+        return res.status(404).json({ mensagem: 'Transação não encontrada.' })
+    }
 };
 
 const addNewTransaction = async (req, res) => {

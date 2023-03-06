@@ -24,8 +24,8 @@ routes.put('/usuario', updateUser);
 
 routes.get('/categoria', showCategories);
 
-routes.get('/transacao', showTransactions); //falta formatacao com join
-routes.get('/transacao/:id', showTransactionsById); //falta tudo
+routes.get('/transacao', showTransactions);
+routes.get('/transacao/:id', showTransactionsById);
 routes.post('/transacao', addNewTransaction);
 routes.put('/transacao/:id', editTransaction); //falta
 routes.delete('/transacao/:id', deleteTransaction); //falta
