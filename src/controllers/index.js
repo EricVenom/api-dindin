@@ -113,7 +113,10 @@ const showCategories = async (req, res) => {
 const showTransactions = async (req, res) => {
     const { id } = req.userId;
     try {
-        const query = 'select * from transacoes where usuario_id = $1';
+        const query = 'SELECT transacoes.id, transacoes.tipo, transacoes.descricao, transacoes.valor, transacoes.data,\
+        transacoes.usuario_id, transacoes.categoria_id, categorias.descricao AS categoria_nome\
+        FROM transacoes\
+        JOIN categorias ON transacoes.categoria_id = categorias.id  WHERE usuario_id = $1';
 
         const { rows: userTransactions, rowCount } = await pool.query(query, [id]);
         if (!rowCount) {
