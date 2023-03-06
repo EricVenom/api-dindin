@@ -5,7 +5,10 @@ const {
     signIn,
     showUser,
     updateUser,
-    showCategories
+    showCategories,
+    showTransactions,
+    showTransactionsById,
+    addNewTransaction
 } = require('./controllers');
 const verifyToken = require('./middlewares');
 
@@ -18,5 +21,11 @@ routes.get('/usuario', showUser);
 routes.put('/usuario', updateUser);
 
 routes.get('/categoria', showCategories);
+
+routes.get('/transacao', showTransactions); //falta
+routes.get('/transacao/:id', showTransactionsById); //falta
+routes.post('/transacao', addNewTransaction);
+
+
 
 module.exports = routes;

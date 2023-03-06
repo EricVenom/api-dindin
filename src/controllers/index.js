@@ -74,7 +74,7 @@ const showUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { nome, email, senha } = req.body;
-    if (!nome || !email || !senha) {
+    if (checkReqs(nome, email, senha)) {
         return res.status(401).json({ mensagem: "Informe todos os campos." })
     };
 
@@ -82,8 +82,8 @@ const updateUser = async (req, res) => {
         const { id } = req.userId;
         const encryptedPassword = await bcrypt.hash(senha, 10);
 
-        const { rowCount } = await pool.query('select * from usuarios where email = $1', [email]);
-        if (rowCount) {
+        const { rowCount, rows } = await pool.query('select * from usuarios where email = $1', [email]);
+        if (rowCount && rows[0].id !== id) {
             return res.status(401).json({ mensagem: "O e-mail informado já está sendo utilizado por outro usuário." })
         }
 
@@ -95,7 +95,69 @@ const updateUser = async (req, res) => {
 };
 
 const showCategories = async (req, res) => {
+    try {
+        const query = 'SELECT * FROM categorias';
 
+        const { rowCount, rows } = await pool.query(query);
+
+        if (!rowCount) {
+            return res.status(400).json({ mensagem: "Dados não encontrados" })
+        }
+        return res.status(200).json(rows);
+
+    } catch (error) {
+        return res.status(500).json(error.message);
+    }
+};
+
+const showTransactions = async (req, res) => {
+    const { id } = req.userId;
+
+    return res.send('this route is running')
+};
+
+const showTransactionsById = async (req, res) => {
+    return res.send('this is running')
+};
+
+const addNewTransaction = async (req, res) => {
+    try {
+        const { id } = req.userId;
+        const { descricao, valor, data, categoria_id, tipo } = req.body;
+
+        if (checkReqs(descricao, valor, data, categoria_id, tipo)) {
+            return res.status(401).json({ mensagem: 'Todos os campos obrigatórios devem ser informados.' });
+        }
+
+        const { rowCount, rows: category } = await pool.query('select * from categorias where id = $1', [categoria_id]);
+        if (!rowCount) {
+            return res.status(404).json({ mensagem: 'A categoria selecionada não existe.' });
+        };
+
+        if (tipo !== 'entrada' && tipo !== 'saida') {
+            return res.stauts(401).json({ mensagem: 'Tipo inválido.' });
+        }
+
+        const query = 'insert into transacoes(descricao, valor, data, categoria_id, usuario_id, tipo)\
+         values ($1, $2, $3, $4, $5, $6)\
+         returning id, tipo, descricao, valor, data, usuario_id, categoria_id';
+
+        const newTrasaction = await pool.query(query, [descricao, valor, data, categoria_id, id, tipo]);
+        const formattedTransaction = { ...newTrasaction.rows[0], categoria_nome: category[0].descricao }
+
+        return res.status(201).json(formattedTransaction);
+    } catch (error) {
+        return res.status(401).json({ mensagem: 'Todos os campos obrigatórios devem ser informados.' });
+    }
 }
 
-module.exports = { signUp, signIn, showUser, updateUser, showCategories }
+module.exports = {
+    signUp,
+    signIn,
+    showUser,
+    updateUser,
+    showCategories,
+    showTransactions,
+    showTransactionsById,
+    addNewTransaction
+}
