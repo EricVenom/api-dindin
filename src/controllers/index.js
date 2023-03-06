@@ -112,8 +112,18 @@ const showCategories = async (req, res) => {
 
 const showTransactions = async (req, res) => {
     const { id } = req.userId;
+    try {
+        const query = 'select * from transacoes where usuario_id = $1';
 
-    return res.send('this route is running')
+        const { rows: userTransactions, rowCount } = await pool.query(query, [id]);
+        if (!rowCount) {
+            return res.status(200).json([]);
+        }
+
+        return res.json(userTransactions)
+    } catch (error) {
+        return res.status(500).json({ mensagem: error.message })
+    }
 };
 
 const showTransactionsById = async (req, res) => {
@@ -149,7 +159,15 @@ const addNewTransaction = async (req, res) => {
     } catch (error) {
         return res.status(401).json({ mensagem: 'Todos os campos obrigatórios devem ser informados.' });
     }
-}
+};
+
+const editTransaction = async (req, res) => {
+
+};
+
+const deleteTransaction = async (req, res) => {
+
+};
 
 module.exports = {
     signUp,
@@ -159,5 +177,7 @@ module.exports = {
     showCategories,
     showTransactions,
     showTransactionsById,
-    addNewTransaction
+    addNewTransaction,
+    editTransaction,
+    deleteTransaction
 }
