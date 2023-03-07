@@ -223,8 +223,24 @@ const deleteTransaction = async (req, res) => {
 };
 
 const transactionDetails = async (req, res) => {
-    return res.send('hello insomnia')
-}
+        const { id: userId} = req.userId;
+        const { id: idTransaction } = req.params;
+
+        try {
+            const queryTransaction =  'SELECT t.id, t.tipo, t.descricao, t.valor, t.data, t.usuario_id, t.categoria_id, c.descricao as categoria_nome FROM transacoes t JOIN categorias c ON t.categoria_id = c.id WHERE t.usuario_id = $1 AND t.id = $2'
+
+            const responseTransaction = await pool.query(queryTransaction, [userId, idTransaction]);
+            const [transaction] = responseTransaction.rows;
+
+            if (!transaction) {
+                return res.status(404).json({ mensagem: 'Impossivel localizar transação' })
+            }
+
+            return res.status(200).json(transaction);
+        } catch (error) {
+            return res.status(500).json(error.message);
+        }
+    }
 
 module.exports = {
     signUp,
