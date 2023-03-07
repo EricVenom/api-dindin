@@ -30,4 +30,6 @@ routes.post('/transacao', addNewTransaction);
 routes.put('/transacao/:id', editTransaction); //falta
 routes.delete('/transacao/:id', deleteTransaction); //falta
 
+routes.get('/transacao/extrato') //falta
+
 module.exports = routes;
