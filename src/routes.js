@@ -10,7 +10,8 @@ const {
     showTransactionsById,
     addNewTransaction,
     editTransaction,
-    deleteTransaction
+    deleteTransaction,
+    transactionDetails
 } = require('./controllers');
 const verifyToken = require('./middlewares');
 
@@ -25,11 +26,11 @@ routes.put('/usuario', updateUser);
 routes.get('/categoria', showCategories);
 
 routes.get('/transacao', showTransactions);
+routes.get('/transacao/extrato', transactionDetails) //falta
 routes.get('/transacao/:id', showTransactionsById);
 routes.post('/transacao', addNewTransaction);
-routes.put('/transacao/:id', editTransaction); //falta
-routes.delete('/transacao/:id', deleteTransaction); //falta
+routes.put('/transacao/:id', editTransaction);
+routes.delete('/transacao/:id', deleteTransaction);
 
-routes.get('/transacao/extrato') //falta
 
 module.exports = routes;

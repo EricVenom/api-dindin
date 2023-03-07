@@ -222,6 +222,10 @@ const deleteTransaction = async (req, res) => {
     }
 };
 
+const transactionDetails = async (req, res) => {
+    return res.send('hello insomnia')
+}
+
 module.exports = {
     signUp,
     signIn,
@@ -232,5 +236,6 @@ module.exports = {
     showTransactionsById,
     addNewTransaction,
     editTransaction,
-    deleteTransaction
+    deleteTransaction,
+    transactionDetails
 }
