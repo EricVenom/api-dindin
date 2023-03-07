@@ -186,12 +186,19 @@ const editTransaction = async (req, res) => {
     const { tipo, descricao, valor, data, categoria_id } = req.body;
 
     try {
+        if (checkReqs(tipo, descricao, valor, data, categoria_id)) {
+            return res.status(400).json({ mensagem: 'Todos os campos obrigatórios devem ser informados.' })
+        };
+
         const query = "update transacoes set \
         (tipo, descricao, valor, data, categoria_id) = \
         ($1, $2, $3, $4, $5) \
         where usuario_id = $6 AND id = $7";
 
-        await pool.query(query, [tipo, descricao, valor, data, categoria_id, id, transactionId]);
+        const { rowCount } = await pool.query(query, [tipo, descricao, valor, data, categoria_id, id, transactionId]);
+        if (!rowCount) {
+            return res.status(404).json({ mensagem: 'Transação não encontrada.' })
+        }
         return res.status(204).json();
     } catch (error) {
         return res.status(404).json({ mensagem: 'Transação não encontrada.' })
@@ -199,7 +206,20 @@ const editTransaction = async (req, res) => {
 };
 
 const deleteTransaction = async (req, res) => {
+    const { id } = req.userId;
+    const { id: transactionId } = req.params;
 
+    try {
+        const query = 'delete from transacoes where usuario_id = $1 and id = $2';
+        const { rowCount } = await pool.query(query, [id, transactionId]);
+        if (!rowCount) {
+            return res.status(404).json({ mensagem: 'Transação não encontrada.' })
+        }
+
+        return res.status(204).json();
+    } catch (error) {
+        return res.status(404).json({ mensagem: 'Transação não encontrada.' })
+    }
 };
 
 module.exports = {
