@@ -1,8 +1,8 @@
 ![](https://i.imgur.com/xG74tOh.png)
 
-# Desafio Back-end | Módulo 3
+# DinDin API
 
-Seu papel é construir uma RESTful API que permita:
+RESTful API que permite:
 
 - Cadastrar Usuário
 - Fazer Login 
@@ -15,25 +15,6 @@ Seu papel é construir uma RESTful API que permita:
 - Editar transação 
 - Remover transação 
 - Obter extrato de transações 
-- [Extra] Filtrar transações por categoria 
-
-**Importante: Lembre-se sempre que cada usuário só pode ver e manipular seus próprios dados e suas próprias transações. Não atender a este pré-requisito é uma falha de segurança gravíssima!**
-
-**Importante 2: O diretório ".github" e seu conteúdo não podem ser alterados e muito menos excluídos**
-
-**Importante 3: Sempre que a validação de uma requisição falhar, responda com código de erro e mensagem adequada à situação, ok?**
-
-**Importante 4: O link de acesso a esta API se encontra no final deste README. Este link é somente para testes (ou seja, será possível realizar requisições a esta API através do link fornecido visando AUXILIAR principalmente o desenvolvimento do desafio de Front-end, o que permitirá o desenvolvimento em paralelo de ambos os desafios)!**
-
-**Exemplo:**
-
-```javascript
-// Quando é informado um id de transação que não existe:
-// HTTP Status 404
-{
-    "mensagem": "Transação não encontrada!"
-}
-```
 
 ## **Banco de dados**
 
@@ -57,7 +38,7 @@ Você precisa criar um Banco de Dados PostgreSQL chamado `dindin` contendo as se
   - usuario_id
   - tipo
 
-**IMPORTANTE: Deverá ser criado no projeto o(s) arquivo(s) SQL que deverá ser o script que cria as tabelas corretamente.**
+**IMPORTANTE: No projeto o arquivo SQL que deverá ser o script que cria as tabelas corretamente se chama `query.sql`.**
 
 As categorias a seguir precisam ser previamente cadastradas para que sejam listadas no endpoint de listagem das categorias.
 
@@ -81,20 +62,6 @@ As categorias a seguir precisam ser previamente cadastradas para que sejam lista
 - Outras receitas
 - Outras despesas
 
-**IMPORTANTE: Deverá ser criado no projeto o arquivo SQL que deverá ser o script de inserção das categorias acima na tabela.**
-
-## **Requisitos obrigatórios**
-
-- A API a ser criada deverá acessar o banco de dados a ser criado "dindin" para persistir e manipular os dados de usuários, categorias e transações utilizados pela aplicação.
-- O campo `id` das tabelas no banco de dados deve ser auto incremento, chave primária e não deve permitir edição uma vez criado.
-- Seu código deverá estar organizado, delimitando as responsabilidades de cada arquivo adequadamente. Ou seja, é esperado que ele tenha, no mínimo:
-  - Um arquivo index.js
-  - Um arquivo conexao.js
-  - Um arquivo de rotas
-  - Um pasta com controladores
-- Qualquer valor monetário deverá ser representado em centavos (Ex.: R$ 10,00 reais = 1000)
-- Evite códigos duplicados. Antes de copiar e colar, pense se não faz sentido esse pedaço de código estar centralizado numa função.
-
 ## **Status Codes**
 
 Abaixo, listamos os possíveis **_status codes_** esperados como resposta da API.
@@ -111,7 +78,6 @@ Abaixo, listamos os possíveis **_status codes_** esperados como resposta da API
 
 ## **Endpoints**
 ---
-# Pessoa A
 ### **Cadastrar usuário**
 #### `POST` `/usuario`
 
@@ -126,17 +92,9 @@ Essa é a rota que será utilizada para cadastrar um novo usuario no sistema.
   - senha
 
 - **Resposta**  
-    Em caso de **sucesso**, deveremos enviar no corpo (body) da resposta o conteúdo do usuário cadastrado, incluindo seu respectivo `id` e excluindo a senha criptografada.
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.
+    - Em caso de **sucesso**, deveremos enviar no corpo (body) da resposta o conteúdo do usuário cadastrado, incluindo seu respectivo `id` e excluindo a senha criptografada.
 
-- **REQUISITOS OBRIGATÓRIOS**
-  - Validar os campos obrigatórios:
-    - nome
-    - email
-    - senha
-  - Validar se o e-mail informado já existe
-  - Criptografar a senha antes de persistir no banco de dados
-  - Cadastrar o usuário no banco de dados
+  - Cadastrará o usuário no banco de dados em caso de **sucesso**.
 
 #### **Exemplo de requisição**
 
@@ -168,7 +126,6 @@ Essa é a rota que será utilizada para cadastrar um novo usuario no sistema.
 ```
 
 ---
-# Pessoa A
 ### **Login do usuário**
 
 #### `POST` `/login`
@@ -184,16 +141,6 @@ Essa é a rota que permite o usuario cadastrado realizar o login no sistema.
 
 - **Resposta**  
     Em caso de **sucesso**, o corpo (body) da resposta deverá possuir um objeto com a propriedade **token** que deverá possuir como valor o token de autenticação gerado e uma propriedade **usuario** que deverá possuir as informações do usuário autenticado, exceto a senha do usuário.  
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.
-
-- **REQUISITOS OBRIGATÓRIOS**
-
-  - Validar os campos obrigatórios:
-    - email
-    - senha
-  - Verificar se o e-mail existe
-  - Validar e-mail e senha
-  - Criar token de autenticação com id do usuário
 
 #### **Exemplo de requisição**
 
@@ -228,19 +175,9 @@ Essa é a rota que permite o usuario cadastrado realizar o login no sistema.
 
 ---
 
-## **ATENÇÃO**: Todas as funcionalidades (endpoints) a seguir, a partir desse ponto, deverão exigir o token de autenticação do usuário logado, recebendo no header com o formato Bearer Token. Portanto, em cada funcionalidade será necessário validar o token informado
+## **ATENÇÃO**: Todas as funcionalidades (endpoints) a seguir, a partir desse ponto, deverão exigem o token de autenticação do usuário logado, recebendo no header com o formato Bearer Token. Portanto, em cada funcionalidade será necessário validar o token informado
 
 ---
-
-### **Validações do token**
-
-- **REQUISITOS OBRIGATÓRIOS**
-  - Validar se o token foi enviado no header da requisição (Bearer Token)
-  - Verificar se o token é válido
-  - Consultar usuário no banco de dados pelo id contido no token informado
-
----
-# Pessoa B
 ### **Detalhar usuário**
 
 #### `GET` `/usuario`
@@ -254,8 +191,6 @@ Essa é a rota que será chamada quando o usuario quiser obter os dados do seu p
 
 - **Resposta**  
     Em caso de **sucesso**, o corpo (body) da resposta deverá possuir um objeto que representa o usuário encontrado, com todas as suas propriedades (exceto a senha), conforme exemplo abaixo, acompanhado de **_status code_** apropriado.  
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.  
-    **Dica:** neste endpoint podemos fazer uso do status code 401 (Unauthorized).
 
 #### **Exemplo de requisição**
 
@@ -282,7 +217,6 @@ Essa é a rota que será chamada quando o usuario quiser obter os dados do seu p
 }
 ```
 ---
-# Pessoa B
 ### **Atualizar usuário**
 
 #### `PUT` `/usuario`
@@ -300,17 +234,6 @@ Essa é a rota que será chamada quando o usuário quiser realizar alterações 
 
 - **Resposta**  
     Em caso de **sucesso**, não deveremos enviar conteúdo no corpo (body) da resposta.  
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.
-
-- **REQUISITOS OBRIGATÓRIOS**
-  - Validar os campos obrigatórios:
-    - nome
-    - email
-    - senha
-  - Validar se o novo e-mail já existe no banco de dados para outro usuário
-    - Caso já exista o novo e-mail fornecido para outro usuário no banco de dados, a alteração não deve ser permitida (o campo de email deve ser sempre único no banco de dados)
-  - Criptografar a senha antes de salvar no banco de dados
-  - Atualizar as informações do usuário no banco de dados
 
 #### **Exemplo de requisição**
 
@@ -337,7 +260,6 @@ Essa é a rota que será chamada quando o usuário quiser realizar alterações 
 }
 ```
 ---
-# Pessoa B
 ### **Listar categorias**
 
 #### `GET` `/categoria`
@@ -350,10 +272,6 @@ Essa é a rota que será chamada quando o usuario logado quiser listar todas as 
 
 - **Resposta**  
     Em caso de **sucesso**, o corpo (body) da resposta deverá possuir um array dos objetos (categorias) encontrados.  
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.
-
-- **REQUISITOS OBRIGATÓRIOS**
-  - O endpoint deverá responder com um array de todas as categorias cadastradas.
 
 #### **Exemplo de requisição**
 
@@ -383,7 +301,6 @@ Essa é a rota que será chamada quando o usuario logado quiser listar todas as 
 []
 ```
 ---
-# Pessoa B
 ### **Listar transações do usuário logado**
 
 #### `GET` `/transacao`
@@ -397,11 +314,6 @@ Essa é a rota que será chamada quando o usuario logado quiser listar todas as 
 
 - **Resposta**  
     Em caso de **sucesso**, o corpo (body) da resposta deverá possuir um array dos objetos (transações) encontrados.  
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.
-
-- **REQUISITOS OBRIGATÓRIOS**
-  - O usuário deverá ser identificado através do ID presente no token de validação
-  - O endpoint deverá responder com um array de todas as transações associadas ao usuário. Caso não exista nenhuma transação associada ao usuário deverá responder com array vazio.
 
 #### **Exemplo de requisição**
 
@@ -443,7 +355,6 @@ Essa é a rota que será chamada quando o usuario logado quiser listar todas as 
 []
 ```
 ---
-# Pessoa A
 ### **Detalhar uma transação do usuário logado**
 
 #### `GET` `/transacao/:id`
@@ -457,10 +368,6 @@ Essa é a rota que será chamada quando o usuario logado quiser obter uma das su
 
 - **Resposta**  
     Em caso de **sucesso**, o corpo (body) da resposta deverá possuir um objeto que representa a transação encontrada, com todas as suas propriedades, conforme exemplo abaixo, acompanhado de **_status code_** apropriado.  
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.
-
-- **REQUISITOS OBRIGATÓRIOS**
-  - Validar se existe transação para o id enviado como parâmetro na rota e se esta transação pertence ao usuário logado.
 
 #### **Exemplo de requisição**
 
@@ -492,7 +399,6 @@ Essa é a rota que será chamada quando o usuario logado quiser obter uma das su
 }
 ```
 ---
-# Pessoa A
 ### **Cadastrar transação para o usuário logado**
 
 #### `POST` `/transacao`
@@ -512,18 +418,6 @@ Essa é a rota que será utilizada para cadastrar uma transação associada ao u
 
 - **Resposta**
     Em caso de **sucesso**, deveremos enviar, no corpo (body) da resposta, as informações da transação cadastrada, incluindo seu respectivo `id`.  
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.
-
-- **REQUISITOS OBRIGATÓRIOS**
-  - Validar os campos obrigatórios:
-    - descricao
-    - valor
-    - data
-    - categoria_id
-    - tipo
-  - Validar se existe categoria para o id enviado no corpo (body) da requisição.
-  - Validar se o tipo enviado no corpo (body) da requisição corresponde a palavra `entrada` ou `saida`, exatamente como descrito.
-  - Cadastrar a transação associada ao usuário logado.
 
 #### **Exemplo de requisição**
 
@@ -561,7 +455,6 @@ Essa é a rota que será utilizada para cadastrar uma transação associada ao u
 }
 ```
 ---
-# Pessoa B
 ### **Atualizar transação do usuário logado**
 
 #### `PUT` `/transacao/:id`
@@ -580,20 +473,7 @@ Essa é a rota que será chamada quando o usuario logado quiser atualizar uma da
   - tipo (campo que será informado se a transação corresponde a uma saída ou entrada de valores)
 
 - **Resposta**  
-    Em caso de **sucesso**, não deveremos enviar conteúdo no corpo (body) da resposta.  
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.
-
-- **REQUISITOS OBRIGATÓRIOS**
-  - Validar se existe transação para o id enviado como parâmetro na rota e se esta transação pertence ao usuário logado.
-  - Validar os campos obrigatórios:
-    - descricao
-    - valor
-    - data
-    - categoria_id
-    - tipo
-  - Validar se existe categoria para o id enviado no corpo (body) da requisição.
-  - Validar se o tipo enviado no corpo (body) da requisição corresponde a palavra `entrada` ou `saida`, exatamente como descrito.
-  - Atualizar a transação no banco de dados
+    Em caso de **sucesso**, não deveremos enviar conteúdo no corpo (body) da resposta. 
 
 #### **Exemplo de requisição**
 
@@ -622,7 +502,6 @@ Essa é a rota que será chamada quando o usuario logado quiser atualizar uma da
 }
 ```
 ---
-# Pessoa B
 ### **Excluir transação do usuário logado**
 
 #### `DELETE` `/transacao/:id`
@@ -636,11 +515,6 @@ Essa é a rota que será chamada quando o usuario logado quiser excluir uma das 
 
 - **Resposta**  
     Em caso de **sucesso**, não deveremos enviar conteúdo no corpo (body) da resposta.  
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.
-
-- **REQUISITOS OBRIGATÓRIOS**:
-  - Validar se existe transação para o id enviado como parâmetro na rota e se esta transação pertence ao usuário logado.
-  - Excluir a transação no banco de dados.
 
 #### **Exemplo de requisição**
 
@@ -663,7 +537,6 @@ Essa é a rota que será chamada quando o usuario logado quiser excluir uma das 
 }
 ```
 ---
-# Pessoa A
 ### **Obter extrato de transações**
 
 #### `GET` `/transacao/extrato`
@@ -677,13 +550,11 @@ Essa é a rota que será chamada quando o usuario logado quiser obter o extrato 
 
 - **Resposta**  
     Em caso de **sucesso**, deveremos enviar no corpo (body) da resposta um objeto contendo a soma de todas as transações do tipo `entrada` e a soma de todas as transações do tipo `saida`.  
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.
 
 - **REQUISITOS OBRIGATÓRIOS**:
   - Em caso de não existir transações do tipo `entrada` cadastradas para o usuário logado, o valor retornado no corpo (body) da resposta deverá ser 0.
   - Em caso de não existir transações do tipo `saida` cadastradas para o usuário logado, o valor retornado no corpo (body) da resposta deverá ser 0.
 
-**Importante: A criação desta rota, no arquivo `rotas.js`, deverá acontecer antes da criação da rota de detalhamento de uma transação (`GET /transacao/:id`), caso contrário, esta rota nunca será possível ser acessada.**
 
 #### **Exemplo de requisição**
 
@@ -703,78 +574,5 @@ Essa é a rota que será chamada quando o usuario logado quiser obter o extrato 
 ```
 
 ---
-# Pessoa A
-## **EXTRA**
 
-**ATENÇÃO!:** Esta parte extra não é obrigatória e recomendamos que seja feita apenas quando terminar toda a parte obrigatória acima.
-
-### **Filtrar transações por categoria**
-
-Na funcionalidade de listagem de transações do usuário logado (**GET /transacao**), deveremos incluir um parâmetro do tipo query **filtro** para que seja possível consultar apenas transações das categorias informadas.
-
-**Lembre-se:** Deverão ser retornadas **apenas** transações associadas ao usuário logado, que deverá ser identificado através do ID presente no token de validação.
-
-- **Requisição**  
-    Parâmetro opcional do tipo query **filtro**.
-    Não deverá possuir conteúdo no corpo (body) da requisição.
-
-- **Resposta**  
-    Em caso de **sucesso**, o corpo (body) da resposta deverá possuir um array dos objetos (transações) encontradas.  
-    Em caso de **falha na validação**, a resposta deverá possuir **_status code_** apropriado, e em seu corpo (body) deverá possuir um objeto com uma propriedade **mensagem** que deverá possuir como valor um texto explicando o motivo da falha.
-
-- **REQUISITOS OBRIGATÓRIOS**
-  - O usuário deverá ser identificado através do ID presente no token de validação
-  - O parâmetro opcional do tipo query **filtro**, quando enviado, deverá ser sempre um array contendo a descrição de uma ou mais categorias.
-  - O endpoint deverá responder com um array de todas as transações associadas ao usuário que sejam da categorias passadas no parâmetro query. Caso não exista nenhuma transação associada ao usuário deverá responder com array vazio.
-
-#### **Exemplo de requisição**
-
-```javascript
-// GET /transacao?filtro[]=roupas&filtro[]=salários
-// Sem conteúdo no corpo (body) da requisição
-```
-
-#### **Exemplos de resposta**
-
-```javascript
-// HTTP Status 200 / 201 / 204
-[
-    {
-        id: 1,
-        tipo: "saida",
-        descricao: "Sapato amarelo",
-        valor: 15800,
-        data: "2022-03-23T15:35:00.000Z",
-        usuario_id: 5,
-        categoria_id: 11,
-        categoria_nome: "Roupas",
-    },
-    {
-        id: 3,
-        tipo: "entrada",
-        descricao: "Salário",
-        valor: 300000,
-        data: "2022-03-24T15:30:00.000Z",
-        usuario_id: 5,
-        categoria_id: 14,
-        categoria_nome: "Salário",
-    },
-]
-```
-
-```javascript
-// HTTP Status 200 / 201 / 204
-[]
-```
-
----
-
-Link do deploy da API somente para testes: [link](https://desafio-backend-03-dindin.herokuapp.com/)
-
-**Este link é somente para testes (ou seja, será possível realizar requisições a esta API através deste link visando AUXILIAR principalmente o desenvolvimento do desafio de Front-end, o que permitirá o desenvolvimento em paralelo de ambos os desafios)!**
-
----
-
-**LEMBRE-SE**: Feito é melhor que perfeito!!!
-
-###### tags: `back-end` `módulo 3` `nodeJS` `PostgreSQL` `API REST` `desafio`
+###### tags: `back-end` `nodeJS` `PostgreSQL` `API REST`
